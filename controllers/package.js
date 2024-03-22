@@ -40,13 +40,14 @@ export const getPackage = async (req, res, next) => {
   }
 };
 export const getPackages = async (req, res, next) => {
-  const { min, max, city,...others } = req.query;
+  const { min, max, city,mainstyle,...others } = req.query;
   try {
     const packages = await Package.find({
       ...others,
       Destination:{ "$regex": city|| '', "$options": "i" },
+      Main_style:{"$regex": mainstyle|| ''},
       Price: { $gt: min | 1, $lt: max || 999 },
-    }).limit(req.query.limit);
+    }).sort({ Review: -1 }).limit(req.query.limit);
     res.status(200).json(packages);
   } catch (err) {
     next(err);
